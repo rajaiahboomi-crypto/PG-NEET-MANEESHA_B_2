@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PG NEET Premium MCQ Bank</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+    body { background: radial-gradient(circle at top left,#7c3aed 0,#312e81 28%,#0f172a 62%,#020617 100%); }
+    .glass { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.22); box-shadow: 0 24px 80px rgba(0,0,0,.25); backdrop-filter: blur(18px); }
+    .dark .glass { background: rgba(15,23,42,.62); border-color: rgba(255,255,255,.12); }
+    .option-card { transition: all .22s ease; }
+    .progress-ring__circle { transition: stroke-dashoffset .8s ease; transform: rotate(-90deg); transform-origin: 50% 50%; }
+    .confetti { position: fixed; top: -15px; width: 10px; height: 16px; background: #facc15; animation: fall 2.8s linear forwards; z-index: 1000; }
+    .confetti:nth-child(3n){ background:#22c55e; } .confetti:nth-child(4n){ background:#ec4899; } .confetti:nth-child(5n){ background:#38bdf8; }
+    @keyframes fall { to { transform: translateY(110vh) rotate(740deg); opacity: 0; } }
+  </style>
+</head>
+<body class="min-h-screen text-white px-4 py-6">
+  <main class="max-w-6xl mx-auto">
+    <section class="flex items-center justify-between mb-6">
+      <div>
+        <p class="uppercase tracking-[.35em] text-xs text-cyan-200 font-black">Premium Medical Practice</p>
+        <h1 class="text-3xl md:text-5xl font-black mt-1">PG NEET MCQ Pro</h1>
+      </div>
+      <button onclick="toggleTheme()" class="glass rounded-2xl px-4 py-3 font-bold hover:scale-105 transition">🌙 / ☀️</button>
+    </section>
+
+    <section id="dashboard-view" class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 glass rounded-[2rem] p-5 md:p-8">
+        <div class="flex flex-col md:flex-row gap-5 md:items-center md:justify-between">
+          <div>
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 text-cyan-100 text-sm font-bold">🩺 NEET PG PYQ Practice</div>
+            <h2 class="text-2xl md:text-4xl font-black mt-4">Choose your subject and start a colourful mock test</h2>
+            <p class="text-white/70 mt-3">Randomized high-yield question bank with explanations, timer, bookmarks and subject-wise result analysis.</p>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 min-w-[270px]">
+            <div class="rounded-3xl bg-white/15 p-4 text-center"><div id="total-count" class="text-2xl font-black">0</div><div class="text-xs text-white/70">Questions</div></div>
+            <div class="rounded-3xl bg-white/15 p-4 text-center"><div id="subject-count" class="text-2xl font-black">0</div><div class="text-xs text-white/70">Subjects</div></div>
+            <div class="rounded-3xl bg-white/15 p-4 text-center"><div id="bookmark-count" class="text-2xl font-black">0</div><div class="text-xs text-white/70">Bookmarks</div></div>
+            <div class="rounded-3xl bg-white/15 p-4 text-center"><div id="image-count" class="text-2xl font-black">0</div><div class="text-xs text-white/70">Images</div></div>
+          </div>
+        </div>
+
+        <div class="mt-7 grid md:grid-cols-3 gap-3">
+          <input id="search-input" placeholder="Search topic / question..." class="md:col-span-2 rounded-2xl px-4 py-3 bg-white/90 text-slate-900 outline-none font-semibold" />
+          <div class="rounded-2xl bg-white/15 px-4 py-3 font-bold">Focus: <span id="selected-focus">All</span></div>
+        </div>
+
+        <div class="mt-6">
+          <p class="text-xs uppercase tracking-widest text-white/60 font-black mb-3">Subject Focus</p>
+          <div id="subject-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="glass rounded-[2rem] p-6">
+          <p class="text-xs uppercase tracking-widest text-white/60 font-black">Mode</p>
+          <div class="grid grid-cols-1 gap-3 mt-3">
+            <button id="mode-Random" onclick="setMode('Random')" class="mode-btn rounded-2xl bg-white text-purple-700 py-3 font-black shadow-lg">🎲 Random Mode</button>
+            <button id="mode-Images" onclick="setMode('Images')" class="mode-btn rounded-2xl bg-white/10 hover:bg-white/20 py-3 font-black">🖼️ Image / Drawing Questions</button>
+            <button id="mode-Bookmarks" onclick="setMode('Bookmarks')" class="mode-btn rounded-2xl bg-white/10 hover:bg-white/20 py-3 font-black">⭐ Bookmarks</button>
+            <button id="mode-Incorrect" onclick="setMode('Incorrect')" class="mode-btn rounded-2xl bg-white/10 hover:bg-white/20 py-3 font-black">🔁 Incorrect Review</button>
+          </div>
+          <p class="text-sm text-white/70 mt-4">Current mode: <b id="mode-label">Random</b></p>
+          <p class="text-xs text-cyan-100/80 mt-2">Use 🖼️ Image / Drawing Questions to practise only questions having diagrams, X-rays, instruments, ECGs or clinical images.</p>
+        </div>
+
+        <div class="glass rounded-[2rem] p-6">
+          <p class="text-xs uppercase tracking-widest text-white/60 font-black">Number of Questions</p>
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <button onclick="setSize(10)" id="size-10" class="size-btn rounded-2xl py-3 bg-white text-indigo-700 font-black shadow-lg">10</button>
+            <button onclick="setSize(25)" id="size-25" class="size-btn rounded-2xl py-3 bg-white/10 hover:bg-white/20 font-black">25</button>
+            <button onclick="setSize(50)" id="size-50" class="size-btn rounded-2xl py-3 bg-white/10 hover:bg-white/20 font-black">50</button>
+            <button onclick="setSize(200)" id="size-200" class="size-btn rounded-2xl py-3 bg-white/10 hover:bg-white/20 font-black">200</button>
+            <button onclick="setSize('Max')" id="size-Max" class="size-btn col-span-2 rounded-2xl py-3 bg-white/10 hover:bg-white/20 font-black">Max</button>
+          </div>
+          <button onclick="startExam()" class="w-full mt-5 rounded-3xl bg-gradient-to-r from-amber-400 via-orange-500 to-pink-600 text-white font-black py-4 shadow-2xl hover:scale-[1.02] transition">Start Exam 🚀</button>
+        </div>
+
+        <div class="glass rounded-[2rem] p-6 max-h-[420px] overflow-auto">
+          <p class="text-xs uppercase tracking-widest text-white/60 font-black mb-3">Subject Coverage</p>
+          <div id="subject-stats" class="space-y-3"></div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="quiz-view" class="hidden glass rounded-[2rem] p-5 md:p-8 max-w-4xl mx-auto">
+      <div class="h-3 bg-white/15 rounded-full overflow-hidden mb-6"><div id="progress-bar" class="h-full bg-gradient-to-r from-cyan-300 via-emerald-300 to-yellow-300 rounded-full transition-all" style="width:0%"></div></div>
+      <div class="flex flex-wrap gap-3 justify-between items-center mb-6">
+        <div class="rounded-2xl bg-white/15 px-4 py-2 font-black">Q <span id="current-q-num">1</span>/<span id="total-q-num">10</span></div>
+        <div id="subject-tag" class="rounded-2xl bg-indigo-500 px-4 py-2 font-black uppercase text-sm">ANATOMY</div>
+        <div class="rounded-2xl bg-emerald-500/80 px-4 py-2 font-black">Score: <span id="live-score">0</span></div>
+        <div class="rounded-2xl bg-orange-500/80 px-4 py-2 font-black">🔥 <span id="streak-count">0</span></div>
+        <div class="rounded-2xl bg-slate-900/70 px-4 py-2 font-black">⏱ <span id="timer">00:00</span></div>
+        <button id="bookmark-btn" onclick="toggleBookmark()" class="px-4 py-2 rounded-xl bg-white/10 text-white font-bold hover:bg-white/20">☆ Bookmark</button>
+      </div>
+      <div class="bg-white/95 text-slate-900 rounded-[1.7rem] p-5 md:p-7 shadow-2xl">
+        <div id="question-text" class="text-lg md:text-xl font-black leading-relaxed">Loading...</div>
+        <div id="question-image-box" class="hidden mt-5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+          <img id="question-image" src="" alt="Question image / drawing" class="w-full max-h-[520px] object-contain rounded-xl bg-white" />
+          <div id="question-image-caption" class="text-xs text-slate-500 font-semibold mt-2 text-center"></div>
+        </div>
+        <div id="options-container" class="space-y-3 pt-5"></div>
+        <div id="explanation-box" class="hidden mt-5 rounded-2xl bg-indigo-50 border border-indigo-100 p-4 text-slate-800">
+          <h4 class="text-xs font-black text-indigo-500 uppercase tracking-widest">Clinical Rationale</h4>
+          <p id="explanation-text" class="text-sm leading-relaxed mt-1"></p>
+        </div>
+      </div>
+      <div class="pt-5 flex justify-between gap-3">
+        <button onclick="returnToDashboard()" class="bg-white/10 hover:bg-white/20 text-white font-black py-3 px-6 rounded-2xl">Exit</button>
+        <button id="next-btn" onclick="nextQuestion()" disabled class="bg-slate-300 text-slate-500 font-black py-3 px-6 rounded-2xl cursor-not-allowed">Next Question ➜</button>
+      </div>
+    </section>
+
+    <section id="results-view" class="hidden glass rounded-[2rem] p-6 md:p-8 max-w-4xl mx-auto text-center">
+      <div class="inline-flex items-center justify-center relative w-36 h-36">
+        <svg class="w-full h-full"><circle class="text-white/15" stroke-width="10" stroke="currentColor" fill="transparent" r="52" cx="72" cy="72"/><circle class="text-emerald-300 progress-ring__circle" stroke-width="10" stroke-dasharray="326.72" stroke-dashoffset="326.72" stroke-linecap="round" stroke="currentColor" fill="transparent" r="52" cx="72" cy="72" id="score-ring"/></svg>
+        <div class="absolute text-3xl font-black" id="percentage-text">0%</div>
+      </div>
+      <h2 class="text-3xl font-black mt-5">Session Complete 🎉</h2>
+      <p class="text-white/75 mt-2">Final Score: <span id="final-score-raw" class="font-black text-white">0/0</span> | Best Streak: <span id="best-streak" class="font-black text-yellow-300">0</span></p>
+      <p id="feedback-message" class="mt-4 text-lg font-semibold"></p>
+      <div id="analysis-box" class="grid md:grid-cols-2 gap-3 mt-6 text-left"></div>
+      <button onclick="returnToDashboard()" class="mt-7 rounded-3xl bg-gradient-to-r from-cyan-400 to-indigo-600 text-white font-black py-4 px-8 shadow-2xl hover:scale-[1.02] transition">Take Another Review</button>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
